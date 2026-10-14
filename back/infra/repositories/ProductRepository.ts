@@ -8,6 +8,8 @@ export interface ProductFilters {
   sort?: string;
   limit?: number;
   offset?: number;
+  minPrice?: number;
+  maxPrice?: number;
 }
 
 function mapProduct(row: Record<string, unknown>): Product {
@@ -37,6 +39,16 @@ export class ProductRepository {
       conditions.push(`category = $${values.length}`);
     }
 
+    if (filters.minPrice !== undefined) {
+      values.push(filters.minPrice);
+      conditions.push(`price >= $${values.length}`);
+    }
+
+    if (filters.maxPrice !== undefined) {
+      values.push(filters.maxPrice);
+      conditions.push(`price <= $${values.length}`);
+    }
+
     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
     const orderBy = filters.sort === "price" ? "price ASC" : "name ASC";
     const sql = `SELECT id, name, description, category, price, stock FROM products ${where} ORDER BY ${orderBy} LIMIT $${values.length + 1} OFFSET $${values.length + 2}`;
@@ -49,6 +61,7 @@ export class ProductRepository {
     console.info(`[ProductRepository] findAll: ${result.rowCount ?? 0} linhas em ${(performance.now() - startedAt).toFixed(2)} ms`);
     return result.rows.map(mapProduct);
   }
+
 
   async countAll(filters: Omit<ProductFilters, 'limit' | 'offset'>): Promise<number> {
     const conditions: string[] = [];
@@ -65,10 +78,21 @@ export class ProductRepository {
       conditions.push(`category = $${values.length}`);
     }
 
+    if (filters.minPrice !== undefined) {
+      values.push(filters.minPrice);
+      conditions.push(`price >= $${values.length}`);
+    }
+
+    if (filters.maxPrice !== undefined) {
+      values.push(filters.maxPrice);
+      conditions.push(`price <= $${values.length}`);
+    }
+
     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
     const result = await db.query(`SELECT COUNT(*) AS total FROM products ${where}`, values);
     return Number(result.rows[0].total);
   }
+
 
   async create(input: CreateProductDTO): Promise<Product> {
     const result = await db.query(

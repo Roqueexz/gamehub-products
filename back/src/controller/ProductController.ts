@@ -10,12 +10,17 @@ export class ProductController {
     const page = Math.max(Number(request.query.page ?? 1), 1);
     const offset = (page - 1) * limit;
 
+    const rawMin = request.query.minPrice ? Number(request.query.minPrice) : undefined;
+    const rawMax = request.query.maxPrice ? Number(request.query.maxPrice) : undefined;
+
     const filters = {
       search: String(request.query.search ?? ""),
       category: String(request.query.category ?? ""),
       sort: String(request.query.sort ?? "name"),
       limit,
-      offset
+      offset,
+      minPrice: rawMin !== undefined && !Number.isNaN(rawMin) ? rawMin : undefined,
+      maxPrice: rawMax !== undefined && !Number.isNaN(rawMax) ? rawMax : undefined
     };
 
     const [products, total] = await Promise.all([
@@ -31,6 +36,7 @@ export class ProductController {
       totalPages: Math.ceil(total / limit)
     });
   };
+
 
   create = async (request: Request, response: Response) => {
     const parsed = createProductSchema.safeParse(request.body);
