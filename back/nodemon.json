@@ -1,0 +1,9 @@
+{
+  "watch": ["src", "infra"],
+  "ext": "ts,json",
+  "ignore": ["src/**/*.spec.ts", "dist", "node_modules"],
+  "exec": "npx tsx src/server.ts",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
