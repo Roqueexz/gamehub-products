@@ -6,17 +6,34 @@ export class ProductController {
   constructor(private readonly service = new ProductService()) {}
 
   list = async (request: Request, response: Response) => {
-    const products = await this.service.list({
+    const limit = Math.min(Number(request.query.limit ?? 24), 100);
+    const page = Math.max(Number(request.query.page ?? 1), 1);
+    const offset = (page - 1) * limit;
+
+    const filters = {
       search: String(request.query.search ?? ""),
       category: String(request.query.category ?? ""),
-      sort: String(request.query.sort ?? "name")
+      sort: String(request.query.sort ?? "name"),
+      limit,
+      offset
+    };
+
+    const [products, total] = await Promise.all([
+      this.service.list(filters),
+      this.service.count(filters)
+    ]);
+
+    response.json({
+      data: products,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
     });
-    response.json(products);
   };
 
   create = async (request: Request, response: Response) => {
     const parsed = createProductSchema.safeParse(request.body);
-
     if (!parsed.success) {
       response.status(400).json({
         message: "Dados inválidos.",
@@ -24,9 +41,21 @@ export class ProductController {
       });
       return;
     }
-
     const product = await this.service.create(parsed.data);
     response.status(201).json(product);
+  };
+
+  update = async (request: Request, response: Response) => {
+    const parsed = createProductSchema.partial().safeParse(request.body);
+    if (!parsed.success) {
+      response.status(400).json({
+        message: "Dados inválidos.",
+        errors: parsed.error.flatten().fieldErrors
+      });
+      return;
+    }
+    const product = await this.service.update(Number(request.params.id), parsed.data);
+    response.json(product);
   };
 
   remove = async (request: Request, response: Response) => {
@@ -36,5 +65,14 @@ export class ProductController {
 
   dashboard = async (_request: Request, response: Response) => {
     response.json(await this.service.dashboard());
+  };
+
+  stats = async (_request: Request, response: Response) => {
+    response.json(await this.service.stats());
+  };
+
+  lowStock = async (_request: Request, response: Response) => {
+    const threshold = Number(_request.query.threshold ?? 5);
+    response.json(await this.service.lowStockProducts(threshold));
   };
 }
