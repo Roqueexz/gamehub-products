@@ -4,9 +4,10 @@ import { formatCurrency } from "@/utils/formatCurrency";
 interface ProductCardProps {
   product: ProductDTO;
   onDelete?: (id: number) => void;
+  onEdit?: (product: ProductDTO) => void;
 }
 
-export function ProductCard({ product, onDelete }: ProductCardProps) {
+export function ProductCard({ product, onDelete, onEdit }: ProductCardProps) {
   return (
     <article className="product-card">
       <div className="product-card__top">
@@ -19,11 +20,18 @@ export function ProductCard({ product, onDelete }: ProductCardProps) {
       <p>{product.description}</p>
       <div className="product-card__bottom">
         <strong>{formatCurrency(product.price)}</strong>
-        {onDelete && (
-          <button className="button button--danger" onClick={() => onDelete(product.id)}>
-            Excluir
-          </button>
-        )}
+        <div style={{ display: "flex", gap: "8px" }}>
+          {onEdit && (
+            <button className="button button--secondary" onClick={() => onEdit(product)}>
+              Editar
+            </button>
+          )}
+          {onDelete && (
+            <button className="button button--danger" onClick={() => onDelete(product.id)}>
+              Excluir
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );
