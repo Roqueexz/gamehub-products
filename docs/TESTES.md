@@ -32,3 +32,27 @@ Registre somente tempos medidos no seu computador; não invente resultados.
 4. Observe o terminal do backend: a mesma listagem é registrada duas vezes por busca e informa linhas/tempo de cada execução.
 5. Abra o dashboard e observe o log de quatro consultas sequenciais
 6. Compare os resultados com a versão resolvida, no mesmo computador, banco e navegador. Não use `setTimeout` ou `sleep` para fabricar lentidão: o exercício deve medir trabalho desnecessário real.
+
+Atividade:
+
+Missão
+A aplicação foi entregue com gargalos de desempenho e dois bugs funcionais intencionais. Identifique e corrija os problemas sem remover funcionalidades. A base-alvo agora é de 60.000 produtos: o catálogo envia a coleção inteira, a página monta milhares de componentes, a busca faz requisição a cada tecla, a consulta de listagem é executada duas vezes e o dashboard percorre a tabela em consultas sequenciais. Os índices de nome/categoria também são removidos pelo inicializador, inclusive quando você reutiliza um banco de uma versão anterior. Investigue usando DevTools (Network e Performance), logs do back-end e medições. Observe também o que acontece depois de cadastrar ou excluir um produto: o catálogo completo é solicitado e renderizado novamente. Ao abrir o catálogo, espere a primeira carga terminar e confira quantos cartões existem no DOM. Em computador mais forte, use a aba Performance do DevTools e compare o tempo de scripting/renderização; o número de milissegundos varia conforme a máquina.
+
+Além dos gargalos de desempenho, há dois bugs funcionais escondidos :Um relacionado ao filtro por categoria e outro à ordenação por preço. Reproduza cada comportamento, encontre a causa no código e registre o teste de regressão antes de corrigir.
+
+## 🎯 Objetivo
+
+Analisar o projeto GameHub, corrigir os erros existentes e melhorar o desempenho da aplicação, tanto no frontend quanto no backend e no banco de dados.
+
+## 📋 Tarefas
+
+1. **Corrigir os bugs:** verificar o filtro por categoria e a ordenação dos produtos por preço.
+2. **Otimizar o catálogo:** evitar carregar todos os produtos de uma vez e melhorar a busca de produtos.
+3. **Melhorar as consultas SQL:** identificar consultas desnecessárias ou ineficientes.
+4. **Otimizar o dashboard:** melhorar a forma como os dados são consultados e apresentados.
+5. **Implementar novas funcionalidades:** desenvolver novos recursos para o GameHub, adicionando mais possibilidades de uso ao sistema. Você deverá identificar oportunidades de melhoria e implementar funcionalidades além das que já existem.
+6. **Testar as melhorias:** garantir que os filtros, a ordenação e as demais funcionalidades continuem funcionando corretamente.
+
+Ao final da sprint, o GameHub deverá apresentar os bugs corrigidos, processos mais eficientes e melhor desempenho na navegação.
+
+**Importante:** mantenham as funcionalidades existentes e evitem alterações que prejudiquem o funcionamento do sistema.
